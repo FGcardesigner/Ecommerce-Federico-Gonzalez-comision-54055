@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import products from '../utils/MocksAsync.json';
+import  products from "../utils/MockAsync.json";
 import { ItemDetail } from "./ItemDetail";
 import { fakeApiCall } from "../utils/fakeApiCall";
 

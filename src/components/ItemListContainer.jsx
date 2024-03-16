@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import categories from '../utils/MocksAsync.json'
+import categories from '../utils/MockAsync.json';
 import { fakeApiCall } from "../utils/fakeApiCall";
 
 const ItemListContainer = () => {
