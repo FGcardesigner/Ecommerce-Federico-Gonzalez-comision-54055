@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import CartWidget from './CartWidget'
+import Unicorn from '../../public/Unicorn.svg';
+
 const Navbar = () => {
     const [showCategories, setShowCategories] = useState(false)
 
