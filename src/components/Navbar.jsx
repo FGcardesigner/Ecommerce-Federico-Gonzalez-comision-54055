@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import CartWidget from './CartWidget';
+import { NavLink, Link } from 'react-router-dom';
 
 const Navbar = () => {
     const [showCategories, setShowCategories] = useState(false)
 
 
-return ( <nav className="bg-red-500 py-4">
-        <div clasName="container flex justify-between items-center">
+return ( <nav className="bg-black py-4">
+        <div className="container flex justify-between items-center">
             <div className="mr-20">
-                <img src="" alt="" />
+                <img src="../public/logo-bici.png" alt="BikeMarket logo" />
             </div>
             <div className="flex items-center justify-center flex-grow">
                 <img src="" alt="" />
@@ -17,37 +18,37 @@ return ( <nav className="bg-red-500 py-4">
                 </form>
             </div>
             <div className="ml-20 flex items-center justify-end">
-                <ul className="flex space-x-4 justify end">
+                <ul className="flex space-x-4 justify-end items-center">
                     <li>
                         <button className="text-white text-xl" href="" onClick={() => setShowCategories(!showCategories)}>Categorías</button>
                         {showCategories && (
                         <ul className="absolute bg-white text-xl w-[20%]">
                         <li>
                             <button className="hover:underline">
-                                Categoría 1
+                                <NavLink to="/category/1"> Categoría 1 </NavLink>
                             </button>
                         </li>
                         <li>
                             <button className="hover:underline">
-                                Categoría 2
+                                <NavLink to="/category/2"> Categoría 2 </NavLink>
                             </button>
                         </li>
                         <li>
                             <button className="hover:underline">
-                                Categoría 3
+                                <NavLink to="/category/3"> Categoría 3 </NavLink>
                             </button>
                         </li>
                         </ul>)} 
                     </li>
                     <li>
-                        <button className="text-white">
-                            Productos
+                        <button className="text-white text-xl">
+                            <NavLink to="/"> Productos </NavLink>
                         </button>
                         
                     </li>
                     <li>
-                    <button className="text-white">
-                            Contacto
+                        <button className="text-white text-xl">
+                            <NavLink to="/contact"> Contacto </NavLink>
                         </button>
                     </li>
                     <li>
