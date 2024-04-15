@@ -7,7 +7,7 @@ const Navbar = () => {
 
 
 return ( <nav className="bg-black py-4">
-        <div className="container flex justify-between items-center">
+        <div className="container max-w-7xl mx-auto flex justify-between items-center">
             <div className="mr-20">
                 <img src="../public/logo-bici.png" alt="BikeMarket logo" />
             </div>

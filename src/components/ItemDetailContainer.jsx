@@ -1,34 +1,28 @@
 import { useEffect, useState } from "react";
-import products from "../utils/MockAsync.json";
 import { ItemDetail } from "./ItemDetail";
-import { fakeApiCall } from "../utils/fakeApiCall";
 import { useParams } from "react-router-dom";
+import { doc,getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 const ItemDetailContainer = () => {
     const [productsCharged, setProductsCharged] = useState([]);
-    const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const [filteredProduct, setFilteredProduct] = useState(null);
 
     useEffect(() => {
-        setLoading(true);
-        fakeApiCall(products)
-            .then(resp => {
-                setProductsCharged(resp.productos);
-                const filteredProd = resp.productos.find(product => product.id == id);
-                setFilteredProduct(filteredProd);
-                setLoading(false);
+        const docRef = doc(db,"productos",id);
+        getDoc (docRef)
+            .then((resp)=>{
+                setFilteredProduct(
+                    {...resp.data(),id:resp.id}
+                )
             })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            });
+
     }, [id]);
 
-    if (loading) return <h1>Loading...</h1>;
 
     return (
-        <div>
+        <div className="max-w-7xl mx-auto py-14">
             {filteredProduct && <ItemDetail item={filteredProduct} />}
         </div>
     );

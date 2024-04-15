@@ -1,30 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import productos from '../utils/MockAsync.json';
-import { fakeApiCall } from "../utils/fakeApiCall";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 const ItemListContainer = () => {
     const category = useParams().id;
-    const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        setLoading(true);
-
-        fakeApiCall(productos)
-            .then(res => {
-                setProducts(res.productos);
-                console.log(res);
-                setLoading(false);
-                console.log(products);
+        const productosRef = collection (db, "productos");
+        getDocs (productosRef)
+            .then ((resp)=>{
+                setProducts (
+                    resp.docs.map((doc)=>{
+                        return { ...doc.data(),id: doc.id}
+                    })
+                )
             })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            });
-    }, []);
 
-    if (loading) return <h1>Cargando...</h1>
+
+    }, []);
 
 
     const getProductosByCategory = (catId) => {
@@ -38,11 +33,10 @@ const ItemListContainer = () => {
     const productsPorCategoria = getProductosByCategory(category)
 
     return (<>
-        <div className= "grid gap-4 grid-cols-3 max-w-7xl mx-auto">
+        <div className= " py-14 grid gap-4 grid-cols-3 max-w-7xl mx-auto">
             {
                 productsPorCategoria && (
                     productsPorCategoria.map((producto) => {
-                        console.log(producto)
                         return (
                             <Link className="border rounded" key={producto.id} to={`/item/${producto.id}`}>
                                 <div className="max-w-sm">
