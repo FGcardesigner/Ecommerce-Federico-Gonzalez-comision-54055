@@ -1,80 +1,114 @@
+import React, { useContext } from "react";
 import { CartContext } from "../context/CartContext";
-import { useContext,useState } from "react";
+import { Link } from "react-router-dom";
 
+const Cart = () => {
+    const { cart, setCart, finalPrice, setFinalPrice } = useContext(CartContext);
 
-const Cart = ()=>{
-    const {cart,setCart, finalPrice, setFinalPrice} = useContext(CartContext);
-    const [amount, setAmount] = useState (1)
-    
-    const handleAdd = (item) => {
-    setAmount (amount+1)
-    }
+    const handleAdd = (productId, productPrice) => {
+        const updatedCart = cart.map((product) =>
+            product.id === productId ? { ...product, stock: product.stock + 1 } : product
+        );
+        setCart(updatedCart);
+        const newFinalPrice = finalPrice + productPrice;
+        setFinalPrice(newFinalPrice);
+    };
 
-    const handleRest = (item) => {
-        amount>1 && setAmount (amount-1)
-}
+    const handleRest = (productId, productPrice) => {
+        const updatedCart = cart.map((product) =>
+            product.id === productId && product.stock > 1 ? { ...product, stock: product.stock - 1 } : product
+        );
+        setCart(updatedCart);
 
+        // Si el stock es mayor que 1, actualizar el precio final
+        if (updatedCart.find((product) => product.id === productId).stock > 1) {
+            const newFinalPrice = finalPrice - productPrice;
+            setFinalPrice(newFinalPrice);
+        }
+    };
 
-    return(
-        <div className="max-w-7xl mx-auto py-10">
-            <table className="w-full ">
-                <thead>
-                    <tr className="grid grid-cols-4">
-                        <th className="col-span-2">Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {cart.length>0 && 
-                    cart.map((prod)=>{
-                        return (
-                            <tr key={prod.id} className="grid items-center grid-cols-4 border-t">
-                                <th className="col-span-2 flex items-center">
-                                    <div className="h-32 w-32">
-                                        <img className="w-full h-full object-cover" src={prod.imagen} alt={prod.nombre} />
-                                    </div>
-                                    <p>
-                                        {prod.nombre}
-                                    </p>
-                                </th>
-                                <th>
-                                    <div className="flex items-center gap-4 mx-auto">
-                                        <span onClick={handleRest(prod)} className="w-10 h-10 rounded bg-red-500 text-white text-lg">
-                                            -
-                                        </span>
-                                        <span>
-                                            {prod.stock}
-                                        </span>
-                                        <span onClick={handleAdd(prod)} className="w-10 h-10 rounded bg-red-500 text-white text-lg">
-                                            +
-                                        </span>
-                                    </div>
-                                </th>
-                                <th>
-                                    <p>
-                                        ${prod.precio}
-                                    </p>
-                                </th>
+    const handleRemove = (productId, productPrice) => {
+        const updatedCart = cart.filter((product) => product.id !== productId);
+        setCart(updatedCart);
+
+        // Restar el precio del producto eliminado del precio final
+        const product = cart.find((product) => product.id === productId);
+        const newFinalPrice = finalPrice - product.precio * product.stock;
+        setFinalPrice(newFinalPrice);
+    };
+
+    return (
+        <>
+            {cart.length > 0 ? (
+                <div className="max-w-7xl mx-auto py-10">
+                    <table className="w-full ">
+                        <thead>
+                            <tr className="grid grid-cols-4">
+                                <th className="col-span-2">Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio</th>
+                                <th></th>
                             </tr>
-                        )
-                    })}
-                    <tr className="grid grid-cols-2 border-t pt-8">
-                        <th>
-                            <p>
-                                Precio Final
-                            </p>
-                        </th>
-                        <th>
-                            <p>
-                                ${finalPrice}
-                            </p>
-                        </th>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    )
-}
+                        </thead>
+                        <tbody>
+                            {cart.map((prod) => {
+                                return (
+                                    <tr key={prod.id} className="grid items-center grid-cols-4 border-t">
+                                        <th className="col-span-2 flex items-center gap-6">
+                                            <div className="h-32 w-32">
+                                                <img className="w-full h-full object-cover" src={prod.imagen} alt={prod.nombre} />
+                                            </div>
+                                            <p className="truncate">{prod.nombre}</p>
+                                        </th>
+                                        <th className="mx-auto">
+                                            <div className="flex items-center gap-4 mx-auto">
+                                                <span onClick={() => handleRest(prod.id, prod.precio)} className="w-6 h-8 rounded bg-red-500 text-white text-xl cursor-pointer">
+                                                    -
+                                                </span>
+                                                <span>{prod.stock}</span>
+                                                <span onClick={() => handleAdd(prod.id, prod.precio)} className="w-6 h-8 rounded bg-red-500 text-white text-xl cursor-pointer">
+                                                    +
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <th className="flex gap-4 mx-auto">
+                                            <p>${prod.precio}</p>
+                                            <button onClick={() => handleRemove(prod.id, prod.precio)} className="text-red-500 hover:text-red-700">X</button>
+                                        </th>
+                                    </tr>
+                                );
+                            })}
+                            <tr className="grid grid-cols-2 border-t-2 border-gray-800 pt-6">
+                                <th>
+                                    <p>Precio Final</p>
+                                </th>
+                                <th>
+                                    <p>${finalPrice}</p>
+                                </th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div className="flex pt-8 justify-center">
+                        <Link to="/checkout">
+                            <button className="bg-red-500 px-4 py-2 text-white w-fit mx-auto rounded hover:opacity-75 transition-colors">Iniciar Pago</button>
+                        </Link>
+                    </div>
+                </div>
+            ) : (
+                <div className="max-w-7xl mx-auto">
+                    <div className="grid place-items-center py-20 gap-4">
+                        <p className="text-lg font-semibold">No hay productos en el carrito, Elige el producto que más te guste</p>
+                        <Link to="/">
+                            <button className="w-fit mx-auto rounded px-4 py-2 bg-red-500 text-white hover:opacity-75 transition-colors">Ver productos</button>
+                        </Link>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
 
 export default Cart;
